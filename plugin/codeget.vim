@@ -20,24 +20,40 @@ function! s:CodeGetGetSnippet()
 endfunction
 
 " Parse a line by breaking it into a list of items.
-" An item is any of these things
-"   - A sequence of non-space characters
+" An item is any of these things, in order
+"   - An = sign
 "   - A double quoted string
 "   - A single quoted string
+"   - A sequence of non-space characters (excluding =)
 
 function! s:ParseIntoItems(line)
     let items = []
     let rest = a:line
 
     while rest !=# ''
+        " Match an = sign
+        let [found, items, rest] = s:MatchItems(rest, '\v^\=', items, 0)
+        if found
+            continue
+        endif
+
         " Match a double quoted string
-        let [items, rest] = s:MatchItems(rest, '\v^"[^"]*"', items, 1)
+        let [found, items, rest] = s:MatchItems(rest, '\v^"[^"]*"', items, 1)
+        if found
+            continue
+        endif
 
         " Match a single quoted string
-        let [items, rest] = s:MatchItems(rest, '\v^''[^'']*''', items, 1)
+        let [found, items, rest] = s:MatchItems(rest, '\v^''[^'']*''', items, 1)
+        if found
+            continue
+        endif
 
-        " Match a sequence of non-space characters, if any
-        let [items, rest] = s:MatchItems(rest, '\v^\S+', items, 0)
+        " Match a sequence of non-space, non-= characters, if any
+        let [found, items, rest] = s:MatchItems(rest, '\v^[^\t \=]+', items, 0)
+        if found
+            continue
+        endif
     endwhile
 
     return items
@@ -52,6 +68,7 @@ endfunction
 "   - Boolean top 'n' tail. If true, first and last characters are
 "     stripped from the match.
 " Outputs:
+"   - Boolean flag, true if successfully matched
 "   - An updated list of items, with the new one (if any) on the end
 "   - The rest of text, after removing the item and spaces
 
@@ -65,9 +82,11 @@ function! s:MatchItems(text, pattern, items, topNTail)
             let match = substitute(match, '\v.$', '', '')
         endif
         let new_items = a:items + [match]
-        return [new_items, rest]
+        echom 'Matched ''' . match . ''''
+        return [1, new_items, rest]
     else
-        return [a:items, a:text]
+        echom 'Matched nothing'
+        return [0, a:items, a:text]
     endif
 endfunction
 
