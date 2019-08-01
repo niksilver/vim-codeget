@@ -15,7 +15,9 @@ function! s:CodeGetGetSnippet()
     let this_line = getline('.')
     let items = s:ParseIntoItems(this_line)
 
-    echom 'Items are ' . string(items)
+    " Get the filename
+    let [filename, error_string] = s:GetFilename(items)
+    echom string([filename, error_string])
 
 endfunction
 
@@ -82,12 +84,30 @@ function! s:MatchItems(text, pattern, items, topNTail)
             let match = substitute(match, '\v.$', '', '')
         endif
         let new_items = a:items + [match]
-        echom 'Matched ''' . match . ''''
         return [1, new_items, rest]
     else
-        echom 'Matched nothing'
         return [0, a:items, a:text]
     endif
+endfunction
+
+" Get a filename from a list of lexical items.
+" Returns
+"   - The filename
+"   - An error string, if it can't be found
+
+function! s:GetFilename(items)
+    if len(a:items) ==# 0
+        return ['', 'No filename given']
+    endif
+
+    let filename = a:items[0]
+    let readable = filereadable(filename)
+    if readable
+        return [filename, '']
+    else
+        return ['', 'Can''t read file ''' . filename . '''']
+    endif
+
 endfunction
 
 let g:code_get_enabled = 1
