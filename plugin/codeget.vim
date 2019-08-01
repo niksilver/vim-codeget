@@ -16,8 +16,18 @@ function! s:CodeGetGetSnippet()
     let items = s:ParseIntoItems(this_line)
 
     " Get the filename
+
     let [filename, error_string] = s:GetFilename(items)
-    echom string([filename, error_string])
+    if error_string !=# ''
+        echom error_string
+        return
+    endif
+
+    echom 'Okay to read file ''' . filename . ''''
+
+    " Insert the contents of the file
+
+    call s:InsertFile(filename)
 
 endfunction
 
@@ -91,9 +101,9 @@ function! s:MatchItems(text, pattern, items, topNTail)
 endfunction
 
 " Get a filename from a list of lexical items.
-" Returns
-"   - The filename
-"   - An error string, if it can't be found
+" Returns a list with
+"   - The filename, if it's a readable file (or '' if not)
+"   - An error string, if it can't be found (or '' if no error)
 
 function! s:GetFilename(items)
     if len(a:items) ==# 0
@@ -109,6 +119,18 @@ function! s:GetFilename(items)
     endif
 
 endfunction
+
+" Insert file below the current line. File is assumed to be readable
+
+function! s:InsertFile(filename)
+    " Insert the lines in reverse order, so each append goes
+    " on the line below the current one
+ 
+    call append(line('.'), ['```'])
+    call append(line('.'), readfile(a:filename))
+    call append(line('.'), ['```'])
+endfunction
+
 
 let g:code_get_enabled = 1
 
