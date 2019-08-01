@@ -121,7 +121,7 @@ endfunction
 " Insert file below the current line. File is assumed to be readable
 
 function! s:InsertFile(filename)
-    let ftype = s:FileType(a:filename)
+    let ftype = s:Filetype(a:filename)
 
     " Insert the lines in reverse order, so each append goes
     " on the line below the current one
@@ -135,7 +135,7 @@ endfunction
 " Adapated from
 " https://vi.stackexchange.com/questions/9962/get-filetype-by-extension-or-filename-in-vimscript
 
-function! s:FileType(filename)
+function! s:Filetype(filename)
     let ext = fnamemodify(a:filename, ':e')
     let ftlines = split(execute('autocmd filetypedetect'), "\n")
     let matching_lines = filter(ftlines, 'v:val =~ "\*\.".ext')
