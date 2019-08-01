@@ -15,6 +15,8 @@ function! s:CodeGetGetSnippet()
     let this_line = getline('.')
     let items = s:ParseIntoItems(this_line)
 
+    echom 'Items are ' . string(items)
+
 endfunction
 
 " Parse a line by breaking it into a list of items.
@@ -28,15 +30,24 @@ function! s:ParseIntoItems(line)
     let rest = a:line
 
     while rest !=# ''
-        " Check for a sequence of non-space characters
-        let [match, start, end] = matchstrpos(rest, '\v^\S+')
+        " Match a sequence of non-space characters, if any
+        let [match, rest] = s:MatchItems(rest, '\v^\S+')
         let items += [match]
-        let rest = rest[end:]
-        let rest = substitute(rest, '\v\s+', '', '')
+        echom 'Rest is "' . rest '"'
     endwhile
 
-    echom 'Items are ' . string(items)
     return items
+endfunction
+
+" Match some text to a pattern. Return the matching string and the
+" rest of the text after the pattern and any spaces.
+" The pattern is assumed to start with '^....'.
+
+function! s:MatchItems(text, pattern)
+    let [match, start, end] = matchstrpos(a:text, a:pattern)
+    let rest = a:text[end:]
+    let rest = substitute(rest, '\v\s+', '', '')
+    return [match, rest]
 endfunction
 
 let g:code_get_enabled = 1
