@@ -13,9 +13,7 @@ function! s:CodeGetGetSnippet()
     " Get the contents of the current line and split into words
 
     let this_line = getline('.')
-    echom 'This line is ''' . this_line . ''''
     let items = s:ParseIntoItems(this_line)
-    echom 'Items are ' . string(items)
 
 endfunction
 
@@ -35,12 +33,9 @@ function! s:ParseIntoItems(line)
         let items += [match]
         let rest = rest[end:]
         let rest = substitute(rest, '\v\s+', '', '')
-        echom "Match = '" . match . "'"
-        echom "Start = '" . start . "'"
-        echom "End = '" . end . "'"
-        echom "Rest = '" . rest . "'"
     endwhile
 
+    echom 'Items are ' . string(items)
     return items
 endfunction
 
