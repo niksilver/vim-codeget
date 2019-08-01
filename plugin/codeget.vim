@@ -31,9 +31,7 @@ function! s:ParseIntoItems(line)
 
     while rest !=# ''
         " Match a sequence of non-space characters, if any
-        let [match, rest] = s:MatchItems(rest, '\v^\S+')
-        let items += [match]
-        echom 'Rest is "' . rest '"'
+        let [items, rest] = s:MatchItems(rest, '\v^\S+', items)
     endwhile
 
     return items
@@ -41,13 +39,20 @@ endfunction
 
 " Match some text to a pattern. Return the matching string and the
 " rest of the text after the pattern and any spaces.
-" The pattern is assumed to start with '^....'.
+" Inputs:
+"   - The text to match
+"   - The pattern, which is assumed to start with '^....'.
+"   - A list of items so far
+" Outputs:
+"   - An updated list of items, with the new one (if any) on the end
+"   - The rest of text, after removing the item and spaces
 
-function! s:MatchItems(text, pattern)
+function! s:MatchItems(text, pattern, items)
     let [match, start, end] = matchstrpos(a:text, a:pattern)
     let rest = a:text[end:]
     let rest = substitute(rest, '\v\s+', '', '')
-    return [match, rest]
+    let new_items = a:items + [match]
+    return [new_items, rest]
 endfunction
 
 let g:code_get_enabled = 1
