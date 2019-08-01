@@ -32,6 +32,10 @@ function! s:ParseIntoItems(line)
     while rest !=# ''
         " Match a double quoted string
         let [items, rest] = s:MatchItems(rest, '\v^"[^"]*"', items)
+
+        " Match a single quoted string
+        let [items, rest] = s:MatchItems(rest, '\v^''[^'']*''', items)
+
         " Match a sequence of non-space characters, if any
         let [items, rest] = s:MatchItems(rest, '\v^\S+', items)
     endwhile
@@ -58,6 +62,7 @@ function! s:MatchItems(text, pattern, items)
         return [new_items, rest]
     else
         return [a:items, a:text]
+    endif
 endfunction
 
 let g:code_get_enabled = 1
