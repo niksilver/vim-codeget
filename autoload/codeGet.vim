@@ -1,3 +1,24 @@
+" Get a filename from a list of lexical items.
+" Returns a list with
+"   - The filename, if it's a readable file (or '' if not)
+"   - An error string, if it can't be found (or '' if no error)
+
+function! codeGet#GetFilename(items)
+    if len(a:items) ==# 0
+        return ['', 'No filename given']
+    endif
+
+    let filename = a:items[0]
+    let readable = filereadable(filename)
+    if readable
+        return [filename, '']
+    else
+        return ['', 'Can''t read file ''' . filename . '''']
+    endif
+
+endfunction
+
+
 " Insert file below the current line. File is assumed to be readable
 
 function! codeGet#InsertFile(filename)
@@ -10,6 +31,7 @@ function! codeGet#InsertFile(filename)
     call append(line('.'), readfile(a:filename))
     call append(line('.'), ['```' . ftype])
 endfunction
+
 
 " Get a filetype from a filename, or empty string.
 " Adapated from
