@@ -25,7 +25,7 @@ function! s:CodeGetGetSnippet()
 
     " Insert the contents of the file
 
-    call s:InsertFile(filename)
+    call codeGet#InsertFile(filename)
 
 endfunction
 
@@ -116,35 +116,6 @@ function! s:GetFilename(items)
         return ['', 'Can''t read file ''' . filename . '''']
     endif
 
-endfunction
-
-" Insert file below the current line. File is assumed to be readable
-
-function! s:InsertFile(filename)
-    let ftype = s:Filetype(a:filename)
-
-    " Insert the lines in reverse order, so each append goes
-    " on the line below the current one
- 
-    call append(line('.'), ['```'])
-    call append(line('.'), readfile(a:filename))
-    call append(line('.'), ['```' . ftype])
-endfunction
-
-" Get a filetype from a filename, or empty string.
-" Adapated from
-" https://vi.stackexchange.com/questions/9962/get-filetype-by-extension-or-filename-in-vimscript
-
-function! s:Filetype(filename)
-    let ext = fnamemodify(a:filename, ':e')
-    let ftlines = split(execute('autocmd filetypedetect'), "\n")
-    let matching_lines = filter(ftlines, 'v:val =~ "\*\.".ext')
-    let matching = uniq(sort(matching_lines))
-
-    if len(matching) == 1 && matching[0]  =~# 'setf'
-        return matchstr(matching[0], '\vsetf\S*\s+\zs\k+')
-    endif
-    return ''
 endfunction
 
 let g:code_get_enabled = 1
