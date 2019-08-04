@@ -1,14 +1,9 @@
 " Get a code snippet and insert it into the file
 
 function! codeGet#GetSnippet()
-    " Get the contents of the current line and split into words
+    " Get the filename on the line, or error
 
-    let this_line = getline('.')
-    let items = codeGet#parse#ParseIntoItems(this_line)
-
-    " Get the filename
-
-    let [filename, error_string] = codeGet#GetFilename(items)
+    let [filename, error_string] = codeGet#ParseLineForFilename()
     if error_string !=# ''
         echom error_string
         return
@@ -18,6 +13,22 @@ function! codeGet#GetSnippet()
 
     call codeGet#InsertFile(filename)
 
+endfunction
+
+
+" Parse the line and return the function needed, or an error
+
+function! codeGet#ParseLineForFilename()
+    " Get the contents of the current line and split into words
+
+    let this_line = getline('.')
+    let items = codeGet#parse#ParseIntoItems(this_line)
+
+    " Get the filename and possible error
+
+    let [filename, error_string] = codeGet#GetFilename(items)
+
+    return [filename, error_string]
 endfunction
 
 
