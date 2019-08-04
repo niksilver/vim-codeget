@@ -84,3 +84,23 @@ function! codeGet#Filetype(filename)
 endfunction
 
 
+" Open a buffer with the given file.
+
+function! codeGet#OpenBuffer()
+    " Get the filename on the line, or error
+
+    let [filename, error_string] = codeGet#ParseLineForFilename()
+    if error_string !=# ''
+        echom error_string
+        return
+    endif
+
+    echom "Looking for buffer for file '" . filename . "'"
+    " See if there is already a buffer for the file
+
+    " Either switch to the existing buffer or open a new one
+
+endfunction
+
+
+
