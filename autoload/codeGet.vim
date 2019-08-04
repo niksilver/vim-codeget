@@ -1,6 +1,6 @@
 " Get a code snippet and insert it into the file
 
-function! codeGet#CodeGetGetSnippet()
+function! codeGet#GetSnippet()
     " Get the contents of the current line and split into words
 
     let this_line = getline('.')

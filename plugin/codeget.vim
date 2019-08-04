@@ -5,7 +5,7 @@ if exists('g:code_get_enabled')
 endif
 
 nnoremap <buffer> <localleader>cg
-    \ :call codeGet#CodeGetGetSnippet()<cr>
+    \ :call codeGet#GetSnippet()<cr>
 
 let g:code_get_enabled = 1
 
