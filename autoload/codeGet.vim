@@ -95,12 +95,39 @@ function! codeGet#OpenBuffer()
         return
     endif
 
-    echom "Looking for buffer for file '" . filename . "'"
     " See if there is already a buffer for the file
+
+    call codeGet#BufferForFile(filename)
 
     " Either switch to the existing buffer or open a new one
 
 endfunction
 
+" Get the buffer for a given file, if any.
+
+function! codeGet#BufferForFile(filename)
+    let exp_filename = expand(a:filename . ':p')
+    echom "Looking for filename '" . exp_filename . "'"
+
+    " Get the output of :buffers as a list of strings (one per output line)
+
+    let buffers_as_lines = split(execute(':buffers'), "\n")
+
+    " Find the buffer number for the file. Format of buffer lines is:
+    " <whitespace> buffer_number <symbols & wspace> "buffer name" <other_stuff>
+
+    for buffer_line in buffers_as_lines
+        let buffer_num = matchlist(buffer_line, '\v([0-9]+)')[1]
+        let exp_buffer_name = expand('#' . buffer_num . ':p')
+        echom "Discovered buffer '" . exp_buffer_name . "'"
+        if exp_filename ==# exp_buffer_name
+            echom "Found a buffer for '" . exp_filename . "'"
+            return 'Dummy value'
+        endif
+    endfor
+
+    echom "Didn't find buffer for file '" . exp_filename . "'"
+    return 'Dummy failure'
+endfunction!
 
 
