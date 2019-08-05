@@ -95,39 +95,28 @@ function! codeGet#OpenBuffer()
         return
     endif
 
-    " See if there is already a buffer for the file
+    " See if there is already a buffer for the file,
+    " and a window for that buffer.
+    " If so, switch to it.
 
-    call codeGet#BufferForFile(filename)
+    let file_buf_num = bufnr(filename)
+    echom "File '" . filename . "' has buf num '" . file_buf_num . "'"
+    if file_buf_num !=# -1
+        let win_num = bufwinid(file_buf_num)
+        echom "Buffer '" . file_buf_num . "' has win num '" . win_num . "'"
 
-    " Either switch to the existing buffer or open a new one
+        if win_num !=# -1
+            " Switch to window for the file
+
+            echo "Switch to window '" . win_num . "'"
+            call win_gotoid(win_num)
+            return
+        endif
+    endif
+
+    " We couldn't find the buffer or window, so open a new window
+
+    echom "Need to open new window"
 
 endfunction
-
-" Get the buffer for a given file, if any.
-
-function! codeGet#BufferForFile(filename)
-    let exp_filename = expand(a:filename . ':p')
-    echom "Looking for filename '" . exp_filename . "'"
-
-    " Get the output of :buffers as a list of strings (one per output line)
-
-    let buffers_as_lines = split(execute(':buffers'), "\n")
-
-    " Find the buffer number for the file. Format of buffer lines is:
-    " <whitespace> buffer_number <symbols & wspace> "buffer name" <other_stuff>
-
-    for buffer_line in buffers_as_lines
-        let buffer_num = matchlist(buffer_line, '\v([0-9]+)')[1]
-        let exp_buffer_name = expand('#' . buffer_num . ':p')
-        echom "Discovered buffer '" . exp_buffer_name . "'"
-        if exp_filename ==# exp_buffer_name
-            echom "Found a buffer for '" . exp_filename . "'"
-            return 'Dummy value'
-        endif
-    endfor
-
-    echom "Didn't find buffer for file '" . exp_filename . "'"
-    return 'Dummy failure'
-endfunction!
-
 
