@@ -100,15 +100,12 @@ function! codeGet#OpenBuffer()
     " If so, switch to it.
 
     let file_buf_num = bufnr(filename)
-    echom "File '" . filename . "' has buf num '" . file_buf_num . "'"
     if file_buf_num !=# -1
         let win_num = bufwinid(file_buf_num)
-        echom "Buffer '" . file_buf_num . "' has win num '" . win_num . "'"
 
         if win_num !=# -1
             " Switch to existing window for the file
 
-            echo "Switch to window '" . win_num . "'"
             call win_gotoid(win_num)
             return
         endif
@@ -116,7 +113,6 @@ function! codeGet#OpenBuffer()
 
     " We couldn't find the buffer or window, so open a new window
 
-    echom "Need to open new window"
     execute "split " . filename
 
 endfunction
