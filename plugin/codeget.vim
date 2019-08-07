@@ -10,8 +10,10 @@ if !exists('g:code_get_preferred_window_width')
     let g:code_get_preferred_window_width = 80
 endif
 
-nnoremap <buffer> <localleader>cg :call codeGet#GetSnippet()<cr>
-nnoremap <buffer> <localleader>co :call codeGet#OpenBuffer()<cr>
+nnoremap <leader>cg :call codeGet#GetSnippet()<cr>
+nnoremap <leader>co :call codeGet#OpenBuffer()<cr>
+
+vnoremap <leader>cp :<c-u>call codeGet#PutSnippet()<cr>
 
 let g:code_get_enabled = 1
 

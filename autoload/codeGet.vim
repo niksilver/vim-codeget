@@ -104,18 +104,21 @@ function! codeGet#OpenBuffer()
         let win_num = bufwinid(file_buf_num)
 
         if win_num !=# -1
-            " Switch to existing window for the file
+            " Switch to existing window for the file, but make sure
+            " we save this as the destination window to return to.
 
+            let g:code_get_destination_window = win_getid()
             call win_gotoid(win_num)
             return
         endif
     endif
 
     " We couldn't find the buffer or window, so open a new window
-    " aiming for the preferred window width
+    " aiming for the preferred window width, but make sure
+    " we save this as the desination window to return to.
 
+    let g:code_get_destination_window = win_getid()
     let split_command = codeGet#GetSplitCommand()
-
 
     execute split_command . ' ' . filename
 
@@ -143,5 +146,33 @@ function! codeGet#GetSplitCommand()
         return 'vsplit'
     else
         return 'split'
+endfunction
+
+
+" Put a snippet back into the original design doc.
+
+function! codeGet#PutSnippet()
+    " Get the snippet (while preserving the register we use)
+
+    let saved_register = @"
+    normal! '<y'>
+    let snippet = split(@", "\n")
+    let @" = saved_register
+    echom '[' . string(snippet) . ']'
+
+    " Switch to the destination window and paste the snippet
+
+    if !exists('g:code_get_destination_window')
+        echom 'No destination window to paste into'
+        return
+    endif
+    
+    let switch_successful = win_gotoid(g:code_get_destination_window)
+    if !switch_successful
+        echom 'Destination window has disappeared'
+        return
+    endif
+
+    call append(line('.'), snippet)
 endfunction
 
