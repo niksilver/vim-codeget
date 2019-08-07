@@ -57,13 +57,22 @@ endfunction
 
 function! codeGet#InsertFile(filename)
     let ftype = codeGet#Filetype(a:filename)
+    call codeGet#InsertLines(ftype, readfile(a:filename))
+endfunction
 
+
+" Insert lines below the current line.
+" Inputs:
+"   - Filetype (for appending after the ``` header)
+"   - Lines to be pasted.
+
+function! codeGet#InsertLines(ftype, lines)
     " Insert the lines in reverse order, so each append goes
     " on the line below the current one
  
     call append(line('.'), ['```'])
-    call append(line('.'), readfile(a:filename))
-    call append(line('.'), ['```' . ftype])
+    call append(line('.'), a:lines)
+    call append(line('.'), ['```' . a:ftype])
 endfunction
 
 
@@ -153,14 +162,16 @@ endfunction
 
 function! codeGet#PutSnippet()
     " Get the snippet (while preserving the register we use)
+    " and its filetype
 
     let saved_register = @"
     normal! '<y'>
     let snippet = split(@", "\n")
     let @" = saved_register
-    echom '[' . string(snippet) . ']'
 
-    " Switch to the destination window and paste the snippet
+    let ftype = &filetype
+
+    " Switch to the destination window (if possible) and paste the snippet
 
     if !exists('g:code_get_destination_window')
         echom 'No destination window to paste into'
@@ -173,6 +184,6 @@ function! codeGet#PutSnippet()
         return
     endif
 
-    call append(line('.'), snippet)
+    call codeGet#InsertLines(ftype, snippet)
 endfunction
 
