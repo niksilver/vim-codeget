@@ -112,8 +112,36 @@ function! codeGet#OpenBuffer()
     endif
 
     " We couldn't find the buffer or window, so open a new window
+    " aiming for the preferred window width
 
-    execute "split " . filename
+    let split_command = codeGet#GetSplitCommand()
 
+
+    execute split_command . ' ' . filename
+
+endfunction
+
+
+" How should we split the window? "vsplit" or "split". We aim for whichever
+" will leave us closest to the preferred window width.
+
+function! codeGet#GetSplitCommand()
+    let width = winwidth(0)
+    let pref = g:code_get_preferred_window_width
+
+    let h_score = pref - width
+    if h_score < 0
+        let h_score = -2 * h_score
+    endif
+
+    let v_score = pref - (width / 2)
+    if v_score < 0
+        let v_score = -2 * v_score
+    endif
+
+    if v_score < h_score
+        return 'vsplit'
+    else
+        return 'split'
 endfunction
 
