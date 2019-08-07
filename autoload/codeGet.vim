@@ -106,7 +106,7 @@ function! codeGet#OpenBuffer()
         echom "Buffer '" . file_buf_num . "' has win num '" . win_num . "'"
 
         if win_num !=# -1
-            " Switch to window for the file
+            " Switch to existing window for the file
 
             echo "Switch to window '" . win_num . "'"
             call win_gotoid(win_num)
@@ -117,6 +117,7 @@ function! codeGet#OpenBuffer()
     " We couldn't find the buffer or window, so open a new window
 
     echom "Need to open new window"
+    execute "split " . filename
 
 endfunction
 
